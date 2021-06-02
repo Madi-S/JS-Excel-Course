@@ -1,0 +1,32 @@
+{
+  "name": "js-excel-course",
+  "version": "1.0.0",
+  "description": "Pure JS Excel Web App",
+  "main": "webpack.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack",
+    "build": "webpack --mode production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Madi-S/JS-Excel-Course.git"
+  },
+  "keywords": [
+    "js",
+    "web",
+    "excel",
+    "html"
+  ],
+  "author": "Shaiken Madi <khovansky99@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Madi-S/JS-Excel-Course/issues"
+  },
+  "homepage": "https://github.com/Madi-S/JS-Excel-Course#readme",
+  "private": true,
+  "devDependencies": {
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.0"
+  }
+}
