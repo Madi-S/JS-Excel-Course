@@ -18,6 +18,10 @@ export class Formula extends ExcelComponent {
     }
 
     onInput(event) {
-        console.log(Formula.name, 'onInput', event)
+        console.log(Formula.name, 'onInput', event, this.$root)
+    }
+
+    onClick(event) {
+        console.log(Formula.name, 'onClick', event, this.$root)
     }
 }
