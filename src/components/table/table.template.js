@@ -14,6 +14,7 @@ function createCol(code) {
     return `
     <div class="column">
         ${String.fromCharCode(code)}
+        <div class="col-resize"></div>
     </div>
     `
 }
@@ -33,7 +34,10 @@ function createRow(counter, colsCount) {
     }
     return `
     <div class="row">
-        <div class="row-info">${counter}</div>
+        <div class="row-info">
+            ${counter}
+            <div ${counter ? 'class="row-resize"' : ''}></div>
+        </div>
         <div class="row-data">${cols.join('')}</div>
     </div>
     `
