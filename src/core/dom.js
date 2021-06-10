@@ -1,6 +1,5 @@
 class Dom {
     constructor(selector) {
-        // #app
         this.$el = typeof selector === 'string' ?
             document.querySelector(selector) :
             selector

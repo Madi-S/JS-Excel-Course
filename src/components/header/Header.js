@@ -2,6 +2,18 @@ import {ExcelComponent} from '@/core/ExcelComponent'
 
 export class Header extends ExcelComponent {
     static className = 'excel__header' 
+    static name = 'Header'
+
+    constructor($root) {
+        super($root, {
+            name: Header.name,
+            listeners: ['click']
+        })
+    }
+
+    onClick() {
+        console.log('Clicked Header')
+    }
 
     toHTML() {
         return `

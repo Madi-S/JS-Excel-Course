@@ -4,6 +4,18 @@ import {
 
 export class Toolbar extends ExcelComponent {
     static className = 'excel__toolbar'
+    static name = 'Toolbar'
+
+    constructor($root) {
+        super($root, {
+            name: Toolbar.name,
+            listeners: ['click']
+        })
+    }
+
+    onClick() {
+        console.log('Clicked Toolbar')
+    }
 
     toHTML() {
         return `

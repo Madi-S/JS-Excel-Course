@@ -1,4 +1,6 @@
-import {capitalize} from '@core/utils'
+import {
+    capitalize
+} from '@core/utils'
 
 export class DOMListener {
     constructor($root, listeners = []) {
@@ -11,24 +13,20 @@ export class DOMListener {
 
     initDOMListeners() {
         this.listeners.forEach(listener => {
-            const callback = this._getCallback(listener)
-            this.$root.on(listener, callback)
+            const callback = getCallbackName(listener)
+            if (!this[callback]) {
+                throw new Error(`${callback} method is not implemented in ${this.name} component`)
+            }
+            this[callback] = this[callback].bind(this)
+            this.$root.on(listener, this[callback])
         })
     }
 
     removeDOMListeners() {
         this.listeners.forEach(listener => {
-            const callback = this._getCallback(listener)
-            this.$root.off(listener, callback)
+            const callback = getCallbackName(listener)
+            this.$root.off(listener, this[callback])
         })
-    }
-
-    _getCallback(listener) {
-        const callback = getCallbackName(listener)
-            if (!this[callback]) {
-                throw new Error(`${callback} method is not implemented in ${this.__proto__.constructor.name} component`)
-        }
-        return this[callback].bind(this)
     }
 }
 

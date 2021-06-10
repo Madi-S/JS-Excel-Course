@@ -1,7 +1,19 @@
 import {ExcelComponent} from '@/core/ExcelComponent'
 
 export class Table extends ExcelComponent {
-    static className = 'excel__table' 
+    static className = 'excel__table'
+    static name = 'Table'
+
+    constructor($root) {
+        super($root, {
+            name: Table.name,
+            listeners: ['click']
+        })
+    }
+
+    onClick() {
+        console.log('Clicked Table')
+    }
 
     toHTML() {
         return `

@@ -12,6 +12,10 @@ export class Excel {
         this.components = this.components.map(Component => {
             const $el = $.create('div', Component.className)
             const component = new Component($el)
+            // *** DEBUG ***
+            if (Component.name) {
+                window['c' + Component.name] = component
+            }
             $el.html(component.toHTML())
             $root.append($el)
             return component
@@ -23,5 +27,9 @@ export class Excel {
         // this.$el.insertAdjacentHTML('afterbegin', `<h1>Test</h1>`)
         this.$el.append(this.getRoot())
         this.components.forEach(component => component.init())
+    }
+
+    shutDown() {
+        this.components.forEach(component => component.destroy())
     }
 }
