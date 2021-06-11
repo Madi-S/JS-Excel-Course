@@ -58,10 +58,11 @@
         white-space: nowrap;
         outline: none;
 
-        &.selected,
-        &:focus {
+        &.selected
+        // ,&:focus
+        {
             border: none;
-            outline: 2px solid $primary-color;
+            outline: 3px solid $primary-color;
             z-index: 2;
         }
     }

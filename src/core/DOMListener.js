@@ -1,6 +1,4 @@
-import {
-    capitalize
-} from '@core/utils'
+import {capitalize} from '@core/utils'
 
 export class DOMListener {
     constructor($root, listeners = []) {

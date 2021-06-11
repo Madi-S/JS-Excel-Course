@@ -1,10 +1,13 @@
 import {ExcelComponent} from '@core/ExcelComponent'
 import {createTable} from '@/components/table/table.template'
 import {clearSelection, pxToInt} from '@/components/table/utils'
+import {TableSelection} from '@/components/table/TableSelection'
+
 
 const DEFAULT_ROW_HEIGHT = 24
 const DEFAULT_COL_WIDTH = 120
 const DEFAULT_RESIZER_LENGTH = '-10000px'
+
 
 export class Table extends ExcelComponent {
     static className = 'excel__table'
@@ -13,8 +16,24 @@ export class Table extends ExcelComponent {
     constructor($root) {
         super($root, {
             name: Table.name,
-            listeners: ['mousedown']
+            listeners: ['mousedown', 'click']
         })
+    }
+
+    prepare() {
+        this.selection = new TableSelection()
+    }
+
+    init() {
+        super.init()
+
+        const $firstCell = this.$root.find('[data-id="0:0"]')
+        this.selection.select($firstCell)
+    }
+
+    onClick(event) {
+        console.log('Inside')
+        this.selection.onClick(event)
     }
 
     onMousedown(event) {
@@ -53,8 +72,8 @@ export class Table extends ExcelComponent {
                 }
 
                 document.onmouseup = e => {
-                    const cellId = event.target.dataset.cellId
-                    const $cells = this.$root.findAll(`.cell[data-cell-id='${cellId}']`)
+                    const colId = event.target.dataset.colId
+                    const $cells = this.$root.findAll(`.cell[data-col-id='${colId}']`)
                     for (const $cell of $cells) {
                         $cell.style.width = this.cellWidth
                     }
@@ -98,4 +117,3 @@ export class Table extends ExcelComponent {
         return createTable()
     }
 }
-
