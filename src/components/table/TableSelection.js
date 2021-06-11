@@ -1,25 +1,27 @@
 import {$} from '@core/dom'
 
 export class TableSelection {
+    
+    static CLASS_NAME = 'selected'
+    
     constructor() {
         this.group = []
     }
 
-    onClick(event) {
-        console.log('clicking', event.target.dataset)
-        if (event.target.dataset.id) {
-            const $el = $(event.target)
-            this.select($el)
-        }
-    }
-
     // $el must be DOM instance
     select($el) {
+        this.clear()
+
+        $el.addClasses(TableSelection.CLASS_NAME)
         this.group.push($el)
-        $el.addClasses(['selected'])
     }
 
     selectGroup($els) {
 
+    }
+
+    clear() {
+        this.group.forEach($el => $el.removeClasses(TableSelection.CLASS_NAME))
+        this.group = []
     }
 }

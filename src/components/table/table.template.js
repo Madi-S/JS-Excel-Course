@@ -6,7 +6,7 @@ const CODES = {
 
 function createCell(colId, rowId, content = '') {
     return `
-    <div class="cell" data-id=${colId + ':' + rowId} data-row-id=${rowId} data-col-id=${colId} contenteditable spellcheck="false">${content}</div>
+    <div class="cell" data-type="cell" data-id=${colId + ':' + rowId} data-row-id=${rowId} data-col-id=${colId} contenteditable spellcheck="false">${content}</div>
     `
 }
 

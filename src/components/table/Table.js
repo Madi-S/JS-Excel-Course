@@ -2,6 +2,7 @@ import {ExcelComponent} from '@core/ExcelComponent'
 import {createTable} from '@/components/table/table.template'
 import {clearSelection, pxToInt} from '@/components/table/utils'
 import {TableSelection} from '@/components/table/TableSelection'
+import {$} from '@core/dom'
 
 
 const DEFAULT_ROW_HEIGHT = 24
@@ -16,7 +17,7 @@ export class Table extends ExcelComponent {
     constructor($root) {
         super($root, {
             name: Table.name,
-            listeners: ['mousedown', 'click']
+            listeners: ['mousedown']
         })
     }
 
@@ -31,12 +32,18 @@ export class Table extends ExcelComponent {
         this.selection.select($firstCell)
     }
 
-    onClick(event) {
-        console.log('Inside')
-        this.selection.onClick(event)
-    }
-
     onMousedown(event) {
+        console.log(event)
+        if (event.shiftKey) {
+
+        }
+
+        if (event.target.dataset.type === 'cell') {
+            const $el = $(event.target)
+            this.selection.select($el)
+            return
+        }
+
         const resize = event.target.dataset.resize
 
         if (resize) {
@@ -53,13 +60,6 @@ export class Table extends ExcelComponent {
                     this._resizeRow(e)
                 }
 
-                document.onmouseup = e => {
-                    $resizer.style.opacity = null
-                    $resizer.style.right = null
-                    document.onmousemove = null
-                    document.onmouseup = null
-                }
-
             } else if (resize == 'col') {
                 this.initialCellWidth = event.clientX
                 this.$column = event.target.closest('.column')
@@ -70,19 +70,23 @@ export class Table extends ExcelComponent {
                     clearSelection()
                     this._resizeCol(e)
                 }
+            }
 
-                document.onmouseup = e => {
+            document.onmouseup = e => {
+                if (this.cellWidth) {
                     const colId = event.target.dataset.colId
                     const $cells = this.$root.findAll(`.cell[data-col-id='${colId}']`)
                     for (const $cell of $cells) {
                         $cell.style.width = this.cellWidth
                     }
-
-                    $resizer.style.opacity = null
-                    $resizer.style.bottom = null
-                    document.onmousemove = null
-                    document.onmouseup = null
                 }
+                this.cellWidth = null
+
+                $resizer.style.opacity = null
+                $resizer.style.right = null
+                $resizer.style.bottom = null
+                document.onmousemove = null
+                document.onmouseup = null
             }
         }
     }

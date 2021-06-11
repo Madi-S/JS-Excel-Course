@@ -54,12 +54,12 @@ class Dom {
         return this
     }
 
-    addClasses(classes = []) {
+    addClasses(...classes) {
         classes.forEach(cls => this.$el.classList.add(cls))
         return this
     }
 
-    removeClasses(classes = []) {
+    removeClasses(...classes) {
         classes.forEach(cls => this.$el.classList.remove(cls))
         return this
     }
