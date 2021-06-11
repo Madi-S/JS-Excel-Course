@@ -4,16 +4,18 @@ const CODES = {
 }
 
 
-function createCell(content = '') {
+function createCell(id, content = '') {
     return `
-    <div class="cell" contenteditable spellcheck="false">${content}</div>
+    <div class="cell" data-cell-id=${id} contenteditable spellcheck="false">${content}</div>
     `
 }
 
 function createCol(code) {
+    const id = code - CODES.A
     return `
     <div class="column">
         ${String.fromCharCode(code)}
+        <div data-resize="col" data-cell-id=${id} class="col-resize"></div>
     </div>
     `
 }
@@ -28,12 +30,15 @@ function createRow(counter, colsCount) {
         }
     } else {
         for (let i = 0; i <= colsCount; i++) {
-            cols.push(createCell())
+            cols.push(createCell(i))
         } 
     }
     return `
     <div class="row">
-        <div class="row-info">${counter}</div>
+        <div class="row-info">
+            ${counter}
+            <div ${counter ? 'data-resize="row" class="row-resize"' : ''}></div>
+        </div>
         <div class="row-data">${cols.join('')}</div>
     </div>
     `
