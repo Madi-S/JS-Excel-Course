@@ -33,9 +33,17 @@ export class Table extends ExcelComponent {
     }
 
     onMousedown(event) {
-        console.log(event)
-        if (event.shiftKey) {
+        if (event.shiftKey && event.target.dataset.type === 'cell') {
+            const initialCell = $(event.target)
 
+            document.onmousemove = e => {
+                if (event.target.dataset.type === 'cell') {
+                    const finalCell = $(e.target)
+                    this.selection.selectGroup(initialCell, finalCell)
+                }
+                
+            }
+            document.onmouseup = () => document.onmousemove = null 
         }
 
         if (event.target.dataset.type === 'cell') {
