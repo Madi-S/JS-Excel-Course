@@ -17,7 +17,7 @@ export class Table extends ExcelComponent {
     constructor($root) {
         super($root, {
             name: Table.name,
-            listeners: ['mousedown']
+            listeners: ['mousedown', 'keydown']
         })
     }
 
@@ -32,8 +32,14 @@ export class Table extends ExcelComponent {
         this.selection.select($firstCell)
     }
 
+    onKeyDown(event) {
+        
+    }
+
     onMousedown(event) {
-        if (event.shiftKey && event.target.dataset.type === 'cell') {
+        console.log('mouse', event)
+
+        if (this._isMultipleSelect(event)) {
             const initialCell = $(event.target)
 
             document.onmousemove = e => {
@@ -44,20 +50,22 @@ export class Table extends ExcelComponent {
                 
             }
             document.onmouseup = () => document.onmousemove = null 
+            return
         }
 
-        if (event.target.dataset.type === 'cell') {
+        if (this._isSingleSelect(event)) {
             const $el = $(event.target)
             this.selection.select($el)
             return
         }
 
         const resize = event.target.dataset.resize
-
         if (resize) {
             const $resizer = event.target
+            const isRowResize = resize === 'row'
+            const isColResize = resize === 'col' 
 
-            if (resize === 'row') {
+            if (isRowResize) {
                 this.initialCellHeight = event.clientY
                 this.$row = event.target.closest('.row')
 
@@ -68,16 +76,22 @@ export class Table extends ExcelComponent {
                     this._resizeRow(e)
                 }
 
-            } else if (resize == 'col') {
+            } else if (isColResize) {
                 this.initialCellWidth = event.clientX
-                this.$column = event.target.closest('.column')
+                this.$column = event.target.closest('.column')                
+            }
 
-                document.onmousemove = e => {
-                    $resizer.style.opacity = 1
+            document.onmousemove = e => {
+                clearSelection()
+                $resizer.style.opacity = 1
+                
+                if (isRowResize) {
+                    $resizer.style.right = DEFAULT_RESIZER_LENGTH
+                    this._resizeRow(e)
+                } else if (isColResize) {
                     $resizer.style.bottom = DEFAULT_RESIZER_LENGTH
-                    clearSelection()
                     this._resizeCol(e)
-                }
+                }                
             }
 
             document.onmouseup = e => {
@@ -98,6 +112,14 @@ export class Table extends ExcelComponent {
             }
         }
     }
+
+    _isSingleSelect(e) {
+        return e.target.dataset.type === 'cell'
+    }
+
+    _isMultipleSelect(e) {
+        return e.shiftKey && e.target.dataset.type === 'cell'
+    } 
 
     _resizeCol(e) {
         const finalCellWidth = e.clientX
