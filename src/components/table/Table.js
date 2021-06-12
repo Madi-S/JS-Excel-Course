@@ -11,8 +11,9 @@ const DEFAULT_RESIZER_LENGTH = '-10000px'
 
 
 export class Table extends ExcelComponent {
-    static className = 'excel__table'
     static name = 'Table'
+    static className = 'excel__table'
+    static navigationKeys = ['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'Tab', 'Enter']
 
     constructor($root) {
         super($root, {
@@ -37,12 +38,14 @@ export class Table extends ExcelComponent {
     }
 
     onKeydown(event) {
-        console.log(event.code)
+        const key = event.code
+        if (Table.navigationKeys.includes(key)) {
+            event.preventDefault()
+            this._handleNavigation(key)
+        }
     }
 
     onMousedown(event) {
-        console.log('mouse', event)
-
         if (this._isMultipleSelect(event)) {
             this._handleMultipleSelect(event)
             return
@@ -60,6 +63,29 @@ export class Table extends ExcelComponent {
         }
     }
 
+    _handleNavigation(key) {
+        let {rowId, colId} = this.selection.selected.$el.dataset
+        rowId = +rowId
+        colId = +colId
+        console.log(rowId, colId)
+
+        if (key === 'ArrowDown' || key === 'Enter') {
+            rowId += 1
+        }
+        else if (key === 'ArrowUp') {
+            rowId -= 1
+        }
+        else if (key === 'ArrowRight' || key === 'Tab') {
+            colId += 1
+        }
+        else if (key === 'ArrowLeft') {
+            colId -= 1
+        }
+        
+        const nextCell = this.$root.find(`[data-id="${colId}:${rowId}"]`)
+        this.selection.select(nextCell)
+    }
+ 
     _handleMultipleSelect(event) {
         const initialCell = $(event.target)
 

@@ -6,14 +6,17 @@ export class TableSelection {
     
     constructor() {
         this.group = []
+        this.selected = null
     }
 
     // $el must be DOM instance
     select($el) {
         this.clear()
 
+        $el.$el.focus()
         $el.addClasses(TableSelection.CLASS_NAME)
         this.group.push($el)
+        this.selected = $el
     }
 
     selectGroup($first, $last) {
@@ -27,11 +30,14 @@ export class TableSelection {
                 this.group.push($cell)
             }
         }
+        this.selected = this.group[0]
+        this.selected.$el.focus()
     }
 
     clear() {
         this.group.forEach($el => $el.removeClasses(TableSelection.CLASS_NAME))
         this.group = []
+        this.selected = null
     }
 
     static findCell(x, y) {
