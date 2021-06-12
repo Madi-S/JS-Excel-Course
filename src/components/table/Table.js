@@ -32,85 +32,49 @@ export class Table extends ExcelComponent {
         this.selection.select($firstCell)
     }
 
-    onKeyDown(event) {
-        
+    toHTML() {
+        return createTable()
+    }
+
+    onKeydown(event) {
+        console.log(event.code)
     }
 
     onMousedown(event) {
         console.log('mouse', event)
 
         if (this._isMultipleSelect(event)) {
-            const initialCell = $(event.target)
-
-            document.onmousemove = e => {
-                if (event.target.dataset.type === 'cell') {
-                    const finalCell = $(e.target)
-                    this.selection.selectGroup(initialCell, finalCell)
-                }
-                
-            }
-            document.onmouseup = () => document.onmousemove = null 
+            this._handleMultipleSelect(event)
             return
         }
 
         if (this._isSingleSelect(event)) {
-            const $el = $(event.target)
-            this.selection.select($el)
+            this._handleSingleSelect(event)
             return
         }
 
         const resize = event.target.dataset.resize
         if (resize) {
-            const $resizer = event.target
-            const isRowResize = resize === 'row'
-            const isColResize = resize === 'col' 
+            this._handleResize(resize, event)
+            return 
+        }
+    }
 
-            if (isRowResize) {
-                this.initialCellHeight = event.clientY
-                this.$row = event.target.closest('.row')
+    _handleMultipleSelect(event) {
+        const initialCell = $(event.target)
 
-                document.onmousemove = e => {
-                    $resizer.style.opacity = 1
-                    $resizer.style.right = DEFAULT_RESIZER_LENGTH
-                    clearSelection()
-                    this._resizeRow(e)
-                }
-
-            } else if (isColResize) {
-                this.initialCellWidth = event.clientX
-                this.$column = event.target.closest('.column')                
-            }
-
-            document.onmousemove = e => {
-                clearSelection()
-                $resizer.style.opacity = 1
-                
-                if (isRowResize) {
-                    $resizer.style.right = DEFAULT_RESIZER_LENGTH
-                    this._resizeRow(e)
-                } else if (isColResize) {
-                    $resizer.style.bottom = DEFAULT_RESIZER_LENGTH
-                    this._resizeCol(e)
-                }                
-            }
-
-            document.onmouseup = e => {
-                if (this.cellWidth) {
-                    const colId = event.target.dataset.colId
-                    const $cells = this.$root.findAll(`.cell[data-col-id='${colId}']`)
-                    for (const $cell of $cells) {
-                        $cell.style.width = this.cellWidth
-                    }
-                }
-                this.cellWidth = null
-
-                $resizer.style.opacity = null
-                $resizer.style.right = null
-                $resizer.style.bottom = null
-                document.onmousemove = null
-                document.onmouseup = null
+        document.onmousemove = e => {
+            if (event.target.dataset.type === 'cell') {
+                const finalCell = $(e.target)
+                this.selection.selectGroup(initialCell, finalCell)
             }
         }
+        document.onmouseup = () => document.onmousemove = null 
+    }
+
+    _handleSingleSelect(event) {
+        const $el = $(event.target)
+        this.selection.select($el)
     }
 
     _isSingleSelect(e) {
@@ -147,7 +111,55 @@ export class Table extends ExcelComponent {
         this.$row.style.height = cellHeight
     }
 
-    toHTML() {
-        return createTable()
+    _handleResize(resize, event) {
+        const $resizer = event.target
+        const isRowResize = resize === 'row'
+        const isColResize = resize === 'col' 
+
+        if (isRowResize) {
+            this.initialCellHeight = event.clientY
+            this.$row = event.target.closest('.row')
+
+            document.onmousemove = e => {
+                $resizer.style.opacity = 1
+                $resizer.style.right = DEFAULT_RESIZER_LENGTH
+                clearSelection()
+                this._resizeRow(e)
+            }
+
+        } else if (isColResize) {
+            this.initialCellWidth = event.clientX
+            this.$column = event.target.closest('.column')                
+        }
+
+        document.onmousemove = e => {
+            clearSelection()
+            $resizer.style.opacity = 1
+            
+            if (isRowResize) {
+                $resizer.style.right = DEFAULT_RESIZER_LENGTH
+                this._resizeRow(e)
+            } else if (isColResize) {
+                $resizer.style.bottom = DEFAULT_RESIZER_LENGTH
+                this._resizeCol(e)
+            }                
+        }
+
+        document.onmouseup = e => {
+            if (this.cellWidth) {
+                const colId = event.target.dataset.colId
+                const $cells = this.$root.findAll(`.cell[data-col-id='${colId}']`)
+                for (const $cell of $cells) {
+                    $cell.style.width = this.cellWidth
+                }
+            }
+            this.cellWidth = null
+
+            $resizer.style.opacity = null
+            $resizer.style.right = null
+            $resizer.style.bottom = null
+            document.onmousemove = null
+            document.onmouseup = null
+        }
     }
 }
