@@ -38,10 +38,9 @@ export class Table extends ExcelComponent {
     }
 
     onKeydown(event) {
-        const key = event.code
-        if (Table.navigationKeys.includes(key)) {
+        if (this._isNavigation(event)) {
             event.preventDefault()
-            this._handleNavigation(key)
+            this._handleNavigation(event.key)
         }
     }
 
@@ -63,27 +62,32 @@ export class Table extends ExcelComponent {
         }
     }
 
+    _isNavigation(event) {
+        return Table.navigationKeys.includes(event.key) && !event.shiftKey && ! event.ctrlKey
+    }
+
     _handleNavigation(key) {
         let {rowId, colId} = this.selection.selected.$el.dataset
         rowId = +rowId
         colId = +colId
-        console.log(rowId, colId)
 
         if (key === 'ArrowDown' || key === 'Enter') {
-            rowId += 1
+            rowId++
         }
         else if (key === 'ArrowUp') {
-            rowId -= 1
+            rowId--
         }
         else if (key === 'ArrowRight' || key === 'Tab') {
-            colId += 1
+            colId++
         }
         else if (key === 'ArrowLeft') {
-            colId -= 1
+            colId--
         }
         
-        const nextCell = this.$root.find(`[data-id="${colId}:${rowId}"]`)
-        this.selection.select(nextCell)
+        const $nextCell = this.$root.find(`[data-id="${colId}:${rowId}"]`)
+        if ($nextCell.$el) {
+            this.selection.select($nextCell)
+        }
     }
  
     _handleMultipleSelect(event) {
