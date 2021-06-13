@@ -4,10 +4,11 @@ export class Header extends ExcelComponent {
     static className = 'excel__header' 
     static name = 'Header'
 
-    constructor($root) {
+    constructor($root, options) {
         super($root, {
             name: Header.name,
-            listeners: ['click']
+            listeners: ['click'],
+            ...options
         })
     }
 

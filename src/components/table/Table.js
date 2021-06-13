@@ -1,8 +1,8 @@
+import {$} from '@core/dom'
 import {ExcelComponent} from '@core/ExcelComponent'
 import {createTable} from '@/components/table/table.template'
 import {clearSelection, pxToInt} from '@/components/table/utils'
 import {TableSelection} from '@/components/table/TableSelection'
-import {$} from '@core/dom'
 
 
 const DEFAULT_ROW_HEIGHT = 24
@@ -15,10 +15,11 @@ export class Table extends ExcelComponent {
     static className = 'excel__table'
     static navigationKeys = ['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'Tab', 'Enter']
 
-    constructor($root) {
+    constructor($root, options) {
         super($root, {
             name: Table.name,
-            listeners: ['mousedown', 'keydown', 'click']
+            listeners: ['mousedown', 'keydown', 'input', 'click'],
+            ...options
         })
     }
 
@@ -29,14 +30,34 @@ export class Table extends ExcelComponent {
     init() {
         super.init()
 
+        this.selectFirstCell()
+        this.subscribe()        
+    }
+
+    selectFirstCell() {
         const $firstCell = this.$root.find('[data-id="0:0"]')
         this.selection.select($firstCell)
+        this._onFocus()
+    }
+
+    subscribe() {
+        this.$on('formula:input', text => {
+            this.selection.selected.text = text
+        })
+        this.$on('formula:enter', () => {
+            this.selection.selected.$el.focus()
+        })
     }
 
     toHTML() {
         return createTable()
     }
 
+    onInput(event) {
+        const text = event.target.textContent
+        this.$emit('table:input', text)
+    }
+  
     onClick(event) {
         const {role, rowId, colId} = event.target.dataset
         if (role) {
@@ -47,18 +68,23 @@ export class Table extends ExcelComponent {
     onKeydown(event) {
         if (this._isNavigation(event)) {
             event.preventDefault()
-            this._handleNavigation(event.key)
+            const moved = this._handleNavigation(event.key)
+            if (moved) {
+                this._onFocus()
+            }
         }
     }
 
     onMousedown(event) {
         if (this._isMultipleSelect(event)) {
             this._handleMultipleSelect(event)
+            this._onFocus()
             return
         }
 
         if (this._isSingleSelect(event)) {
             this._handleSingleSelect(event)
+            this._onFocus()
             return
         }
 
@@ -67,6 +93,11 @@ export class Table extends ExcelComponent {
             this._handleResize(resize, event)
             return 
         }
+    }
+
+    _onFocus() {
+        const text = this.selection.selected.$el.textContent
+        this.$emit('table:focus', text)
     }
 
     _isNavigation(event) {
@@ -94,6 +125,7 @@ export class Table extends ExcelComponent {
         const $nextCell = this.$root.find(`[data-id="${colId}:${rowId}"]`)
         if ($nextCell.$el) {
             this.selection.select($nextCell)
+            return true
         }
     }
  

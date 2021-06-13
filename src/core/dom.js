@@ -5,25 +5,37 @@ class Dom {
             selector
     }
 
-    html(html) {
-        if (typeof html === 'string') {
-            this.$el.innerHTML = html
-            return this
-        }
+    set html(html) {
+        this.$el.innerHTML = html
+        return this
+    }
+
+    get html() {
         return this.$el.outerHTML.trim()
     }
 
+    set text(text) {
+        this.$el.textContent = text
+        return this
+    }
+
+    get text() {
+        return this.$el.textContent 
+    }
+
     clear() {
-        this.html('')
+        this.html = ''
         return this
     }
 
     on(eventType, callback) {
         this.$el.addEventListener(eventType, callback)
+        return this
     }
 
     off(eventType, callback) {
         this.$el.removeEventListener(eventType, callback)
+        return this
     }
 
     append(node) {
@@ -74,9 +86,6 @@ class Dom {
 export function $(selector) {
     return new Dom(selector)
 }
-
-
-$('div').html('<h1>Test</h1>').clear()
 
 $.create = (tagname, classes = '') => {
     const el = document.createElement(tagname)
