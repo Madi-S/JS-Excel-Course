@@ -19,13 +19,12 @@ export class Formula extends ExcelComponent {
 
         this.$formulaInput = $('#formulaInput')
         this.subscribe()
-    }
-
-    
+    }    
 
     subscribe() {
         this.$on('table:focus', text => this._changeText(text))
         this.$on('table:input', text => this._changeText(text))
+        this.$subscribe(state => console.log('FormulaState:', state))
     }
 
     toHTML() {

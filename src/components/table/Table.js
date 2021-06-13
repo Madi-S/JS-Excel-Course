@@ -31,7 +31,7 @@ export class Table extends ExcelComponent {
         super.init()
 
         this.selectFirstCell()
-        this.subscribe()        
+        this.subscribe()    
     }
 
     selectFirstCell() {
@@ -47,6 +47,7 @@ export class Table extends ExcelComponent {
         this.$on('formula:enter', () => {
             this.selection.selected.$el.focus()
         })
+        this.$subscribe(state => console.log('TableState:', state))
     }
 
     toHTML() {
@@ -179,56 +180,75 @@ export class Table extends ExcelComponent {
         this.$row.style.height = cellHeight
     }
 
-    _handleResize(resize, event) {
-        const $resizer = event.target
-        const isRowResize = resize === 'row'
-        const isColResize = resize === 'col' 
+    async _handleResize(resize, event) {
+        try {
+            const data = await this.__handleResize(resize, event)
+            this.$dispatch({type: 'TABLE_RESIZE', data})
+        } catch (e) {
+            console.warn('[RESIZE ERROR]:', e)
+        }
+    }
 
-        if (isRowResize) {
-            this.initialCellHeight = event.clientY
-            this.$row = event.target.closest('.row')
+    __handleResize(resize, event) {
+        return new Promise(resolve => {
+            const $resizer = event.target
+            const isRowResize = resize === 'row'
+            const isColResize = resize === 'col' 
+
+            if (isRowResize) {
+                this.initialCellHeight = event.clientY
+                this.$row = event.target.closest('.row')
+
+                document.onmousemove = e => {
+                    $resizer.style.opacity = 1
+                    $resizer.style.right = DEFAULT_RESIZER_LENGTH
+                    clearSelection()
+                    this._resizeRow(e)
+                }
+
+            } else if (isColResize) {
+                this.initialCellWidth = event.clientX
+                this.$column = event.target.closest('.column')                
+            }
 
             document.onmousemove = e => {
-                $resizer.style.opacity = 1
-                $resizer.style.right = DEFAULT_RESIZER_LENGTH
                 clearSelection()
-                this._resizeRow(e)
+                $resizer.style.opacity = 1
+                
+                if (isRowResize) {
+                    $resizer.style.right = DEFAULT_RESIZER_LENGTH
+                    this._resizeRow(e)
+                } else if (isColResize) {
+                    $resizer.style.bottom = DEFAULT_RESIZER_LENGTH
+                    this._resizeCol(e)
+                }                
             }
 
-        } else if (isColResize) {
-            this.initialCellWidth = event.clientX
-            this.$column = event.target.closest('.column')                
-        }
-
-        document.onmousemove = e => {
-            clearSelection()
-            $resizer.style.opacity = 1
-            
-            if (isRowResize) {
-                $resizer.style.right = DEFAULT_RESIZER_LENGTH
-                this._resizeRow(e)
-            } else if (isColResize) {
-                $resizer.style.bottom = DEFAULT_RESIZER_LENGTH
-                this._resizeCol(e)
-            }                
-        }
-
-        document.onmouseup = e => {
-            if (this.cellWidth) {
+            document.onmouseup = e => {
                 const colId = event.target.dataset.colId
-                const $cells = this.$root.findAll(`.cell[data-col-id='${colId}']`)
-                for (const $cell of $cells) {
-                    $cell.css({'width': this.cellWidth})
-                }
-            }
-            this.cellWidth = null
+                const cellWidth = this.cellWidth
+                this.cellWidth = null
 
-            $resizer.style.opacity = null
-            $resizer.style.right = null
-            $resizer.style.bottom = null
-            document.onmousemove = null
-            document.onmouseup = null
-        }
+                if (cellWidth) {
+                    const $cells = this.$root.findAll(`.cell[data-col-id='${colId}']`)
+                    for (const $cell of $cells) {
+                        $cell.css({'width': cellWidth})
+                    }
+                }
+                
+                $resizer.style.opacity = null
+                $resizer.style.right = null
+                $resizer.style.bottom = null
+                document.onmousemove = null
+                document.onmouseup = null
+                
+                resolve({
+                    id: colId,
+                    value: cellWidth
+                })
+            }
+        })
+        
     }
 
     _selectRowColCells({role, colId, rowId}) {
