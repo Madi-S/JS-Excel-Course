@@ -18,7 +18,7 @@ export class Table extends ExcelComponent {
     constructor($root) {
         super($root, {
             name: Table.name,
-            listeners: ['mousedown', 'keydown']
+            listeners: ['mousedown', 'keydown', 'click']
         })
     }
 
@@ -35,6 +35,19 @@ export class Table extends ExcelComponent {
 
     toHTML() {
         return createTable()
+    }
+
+    onClick(event) {
+        const {role, rowId, colId} = event.target.dataset
+        if (role) {
+            let cells
+            if (role === 'selectCol') {
+                cells = this.$root.findAll(`.cell[data-col-id="${colId}"]`) 
+            } else if (role === 'selectRow') {
+                cells = this.$root.findAll(`.cell[data-row-id="${rowId}"]`)
+            }
+            this.selection.selectAll(cells)
+        }
     }
 
     onKeydown(event) {
@@ -96,7 +109,7 @@ export class Table extends ExcelComponent {
         document.onmousemove = e => {
             if (event.target.dataset.type === 'cell') {
                 const finalCell = $(e.target)
-                this.selection.selectGroup(initialCell, finalCell)
+                this.selection.selectFromTo(initialCell, finalCell)
             }
         }
         document.onmouseup = () => document.onmousemove = null 
@@ -180,7 +193,7 @@ export class Table extends ExcelComponent {
                 const colId = event.target.dataset.colId
                 const $cells = this.$root.findAll(`.cell[data-col-id='${colId}']`)
                 for (const $cell of $cells) {
-                    $cell.style.width = this.cellWidth
+                    $cell.css({'width': this.cellWidth})
                 }
             }
             this.cellWidth = null

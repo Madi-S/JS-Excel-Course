@@ -13,7 +13,7 @@ function createCell(colId, rowId, content = '') {
 function createCol(code) {
     const colId = code - CODES.A
     return `
-    <div class="column">
+    <div class="column" data-role="selectCol" data-col-id=${colId}>
         ${String.fromCharCode(code)}
         <div data-resize="col" data-col-id=${colId} class="col-resize"></div>
     </div>
@@ -33,16 +33,26 @@ function createRow(counter, colsCount) {
             cols.push(createCell(i, counter))
         } 
     }
-    const counterIsNum = typeof counter === 'number'
-    return `
-    <div class="row">
-        <div class="row-info">
-            ${counterIsNum ? counter + 1 : ''}
-            <div ${counterIsNum ? 'data-resize="row" class="row-resize"' : ''}></div>
+    if (typeof counter === 'number') {
+        return `
+        <div class="row">
+            <div class="row-info" data-role="selectRow" data-row-id=${counter}>
+                ${counter + 1}
+                <div data-resize="row" class="row-resize"></div>
+            </div>
+            <div class="row-data">${cols.join('')}</div>
         </div>
-        <div class="row-data">${cols.join('')}</div>
-    </div>
-    `
+        `
+    }
+    return `
+        <div class="row">
+            <div class="row-info row-info-disabled">                
+                <div class="row-resize"></div>
+            </div>
+            <div class="row-data">${cols.join('')}</div>
+        </div>
+        `
+    
 }
 
 export function createTable(rowsCount = 100, columnsCount) {
