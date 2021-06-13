@@ -24,7 +24,6 @@ export class Formula extends ExcelComponent {
     subscribe() {
         this.$on('table:focus', text => this._changeText(text))
         this.$on('table:input', text => this._changeText(text))
-        this.$subscribe(state => console.log('FormulaState:', state))
     }
 
     toHTML() {
