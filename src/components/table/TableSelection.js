@@ -19,7 +19,7 @@ export class TableSelection {
         this.selected = $el
     }
 
-    selectGroup($first, $last) {
+    selectFromTo($first, $last) {
         const [minX, maxX, minY, maxY] = TableSelection.getBoundaries($first, $last)
         this.clear()
 
@@ -30,7 +30,20 @@ export class TableSelection {
                 this.group.push($cell)
             }
         }
+
         this.selected = this.group[0]
+        this.selected.$el.focus()
+    }
+
+    selectAll($cells) {
+        this.clear()
+
+        for (const $cell of $cells) {
+            $cell.addClasses(TableSelection.CLASS_NAME)
+            this.group.push($cell)
+        }
+
+        this.selected = $cells[0]
         this.selected.$el.focus()
     }
 

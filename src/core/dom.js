@@ -56,7 +56,12 @@ class Dom {
     }
 
     findAll(selector) {
-        return this.$el.querySelectorAll(selector)
+        const $els = []
+        const els = this.$el.querySelectorAll(selector)
+        for (const el of els) {
+            $els.push($(el))
+        }
+        return $els
     }
 
     css(styles = {}) {

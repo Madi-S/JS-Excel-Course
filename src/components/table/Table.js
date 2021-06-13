@@ -18,7 +18,7 @@ export class Table extends ExcelComponent {
     constructor($root, options) {
         super($root, {
             name: Table.name,
-            listeners: ['mousedown', 'keydown', 'input'],
+            listeners: ['mousedown', 'keydown', 'input', 'click'],
             ...options
         })
     }
@@ -56,6 +56,13 @@ export class Table extends ExcelComponent {
     onInput(event) {
         const text = event.target.textContent
         this.$emit('table:input', text)
+    }
+  
+    onClick(event) {
+        const {role, rowId, colId} = event.target.dataset
+        if (role) {
+            this._selectRowColCells()
+        }
     }
 
     onKeydown(event) {
@@ -128,7 +135,7 @@ export class Table extends ExcelComponent {
         document.onmousemove = e => {
             if (event.target.dataset.type === 'cell') {
                 const finalCell = $(e.target)
-                this.selection.selectGroup(initialCell, finalCell)
+                this.selection.selectFromTo(initialCell, finalCell)
             }
         }
         document.onmouseup = () => document.onmousemove = null 
@@ -212,7 +219,7 @@ export class Table extends ExcelComponent {
                 const colId = event.target.dataset.colId
                 const $cells = this.$root.findAll(`.cell[data-col-id='${colId}']`)
                 for (const $cell of $cells) {
-                    $cell.style.width = this.cellWidth
+                    $cell.css({'width': this.cellWidth})
                 }
             }
             this.cellWidth = null
@@ -223,5 +230,15 @@ export class Table extends ExcelComponent {
             document.onmousemove = null
             document.onmouseup = null
         }
+    }
+
+    _selectRowColCells(event) {
+        let cells
+        if (role === 'selectCol') {
+            cells = this.$root.findAll(`.cell[data-col-id="${colId}"]`) 
+        } else if (role === 'selectRow') {
+            cells = this.$root.findAll(`.cell[data-row-id="${rowId}"]`)
+        }
+        this.selection.selectAll(cells)
     }
 }

@@ -16,6 +16,7 @@
         height: $row-height;
     }
 
+    
     .row-info {
         position: relative;
         display: flex;
@@ -26,6 +27,11 @@
         background: #f8f9fa;
         border: 1px solid $border-color;
         border-top: none;
+        cursor: pointer;
+    }
+
+    .row-info-disabled {
+        cursor: default;
     }
 
     .row-data {
@@ -33,6 +39,7 @@
     }
 
     .column {
+        cursor: pointer;
         position: relative;
         display: flex;
         justify-content: center;
