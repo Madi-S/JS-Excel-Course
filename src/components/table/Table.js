@@ -59,9 +59,8 @@ export class Table extends ExcelComponent {
     }
   
     onClick(event) {
-        const {role, rowId, colId} = event.target.dataset
-        if (role) {
-            this._selectRowColCells()
+        if (event.target.dataset.role) {
+            this._selectRowColCells(event.target.dataset)
         }
     }
 
@@ -232,7 +231,7 @@ export class Table extends ExcelComponent {
         }
     }
 
-    _selectRowColCells(event) {
+    _selectRowColCells({role, colId, rowId}) {
         let cells
         if (role === 'selectCol') {
             cells = this.$root.findAll(`.cell[data-col-id="${colId}"]`) 
