@@ -40,13 +40,7 @@ export class Table extends ExcelComponent {
     onClick(event) {
         const {role, rowId, colId} = event.target.dataset
         if (role) {
-            let cells
-            if (role === 'selectCol') {
-                cells = this.$root.findAll(`.cell[data-col-id="${colId}"]`) 
-            } else if (role === 'selectRow') {
-                cells = this.$root.findAll(`.cell[data-row-id="${rowId}"]`)
-            }
-            this.selection.selectAll(cells)
+            this._selectRowColCells()
         }
     }
 
@@ -204,5 +198,15 @@ export class Table extends ExcelComponent {
             document.onmousemove = null
             document.onmouseup = null
         }
+    }
+
+    _selectRowColCells(event) {
+        let cells
+        if (role === 'selectCol') {
+            cells = this.$root.findAll(`.cell[data-col-id="${colId}"]`) 
+        } else if (role === 'selectRow') {
+            cells = this.$root.findAll(`.cell[data-row-id="${rowId}"]`)
+        }
+        this.selection.selectAll(cells)
     }
 }
