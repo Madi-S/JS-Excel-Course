@@ -29,10 +29,24 @@ export class Excel {
 
     render() {
         this.$el.append(this.getRoot())
+        this._init()
         this.components.forEach(component => component.init())
+    }
+
+    _init() {
+        this.$el.on('paste', this._preventFormattedPaste)
+    }
+
+    _preventFormattedPaste(event) {
+        document.addEventListener('paste', event => {
+            event.preventDefault()
+            const text = event.clipboardData.getData('text/plain') || ''
+            document.execCommand('insertText', false, text.trim())
+        })
     }
 
     shutDown() {
         this.components.forEach(component => component.destroy())
+        this.$el.off('paste')
     }
 }
