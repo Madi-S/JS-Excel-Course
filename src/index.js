@@ -11,6 +11,7 @@ import {Formula} from '@/components/formula/Formula'
 
 import {saveToLocalStorage, getFromLocalStorage} from '@core/utils'
 
+
 const STATE_KEY = 'excel-state'
 const initialState = getFromLocalStorage(STATE_KEY)
 const store = createStore(rootReducer, initialState)
@@ -24,5 +25,6 @@ const excel = new Excel('#app', {
     components: [Header, Toolbar, Formula, Table],
     store
 })
+
 excel.render()
 window.excel = excel

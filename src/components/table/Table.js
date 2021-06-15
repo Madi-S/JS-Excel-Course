@@ -50,7 +50,7 @@ export class Table extends ExcelComponent {
     }
 
     toHTML() {
-        return createTable()
+        return createTable(20, 20, this.store.getState())
     }
 
     onInput(event) {
@@ -228,7 +228,6 @@ export class Table extends ExcelComponent {
             this.cellWidth = null
 
             if (cellWidth) {
-                console.log(this.resizingColumn)
                 const colId = this.resizingColumn.dataset.colId
                 const $cells = this.$root.findAll(`.cell[data-col-id='${colId}']`)
                 for (const $cell of $cells) {
