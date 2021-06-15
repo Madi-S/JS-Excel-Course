@@ -1,17 +1,24 @@
-import {COL_RESIZE, ROW_RESIZE} from './types'
+import * as types from './types'
 
 // Action creaters
 
 export function rowResize(data) {
     return {
-        type: ROW_RESIZE,
+        type: types.ROW_RESIZE,
         data
     }
 }
 
 export function colResize(data) {
     return {
-        type: COL_RESIZE,
+        type: types.COL_RESIZE,
+        data
+    }
+}
+
+export function changeText(data) {
+    return {
+        type: types.CHANGE_TEXT,
         data
     }
 }

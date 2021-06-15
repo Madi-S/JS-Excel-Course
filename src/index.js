@@ -1,5 +1,6 @@
 import './scss/index.scss'
 
+import {initialState, STATE_KEY} from '@/redux/initialState'
 import {rootReducer} from '@/redux/rootReducer'
 import {createStore} from '@core/createStore'
 
@@ -9,11 +10,9 @@ import {Header} from '@/components/header/Header'
 import {Toolbar} from '@/components/toolbar/Toolbar'
 import {Formula} from '@/components/formula/Formula'
 
-import {saveToLocalStorage, getFromLocalStorage} from '@core/utils'
+import {saveToLocalStorage} from '@core/utils'
 
 
-const STATE_KEY = 'excel-state'
-const initialState = getFromLocalStorage(STATE_KEY)
 const store = createStore(rootReducer, initialState)
 
 store.subscribe(state => {

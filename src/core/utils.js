@@ -12,5 +12,5 @@ export function saveToLocalStorage(key, item) {
 
 export function getFromLocalStorage(key) {
     const item = localStorage.getItem(key)
-    return JSON.parse(item) 
+    return JSON.parse(item)
 }

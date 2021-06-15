@@ -5,11 +5,13 @@ const CODES = {
 
 let colState
 let rowState
+let dataState
 
-function createCell(colId, rowId, content = '') {
+function createCell(colId, rowId) {
     const width = colState[colId] 
     const css = `style="width: ${width};"`
-    
+    const content = dataState[`${colId}:${rowId}`] || ''
+
     return `
     <div ${css} class="cell" data-type="cell" data-id=${colId + ':' + rowId} data-row-id=${rowId} data-col-id=${colId} contenteditable spellcheck="false">${content}</div>
     `
@@ -74,6 +76,7 @@ function createRow(rowsCounter, colsCount) {
 export function createTable(rowsCount = 100, columnsCount = 20, state = {}) {
     colState = state['colState']
     rowState = state['rowState']
+    dataState = state['dataState']
 
     const colsCount = columnsCount || CODES.Z - CODES.A
     const rows = []

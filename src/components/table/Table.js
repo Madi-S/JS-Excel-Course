@@ -43,6 +43,7 @@ export class Table extends ExcelComponent {
     subscribe() {
         this.$on('formula:input', text => {
             this.selection.selected.text = text
+            this.updateTextInStore(text)
         })
         this.$on('formula:enter', () => {
             this.selection.selected.$el.focus()
@@ -54,8 +55,8 @@ export class Table extends ExcelComponent {
     }
 
     onInput(event) {
-        const text = event.target.textContent
-        this.$emit('table:input', text)
+        // this.$emit('table:input', text)
+        this.updateTextInStore(event.target.textContent)
     }
   
     onClick(event) {
@@ -92,6 +93,15 @@ export class Table extends ExcelComponent {
             this._handleResize(resize, event)
             return 
         }
+    }
+
+    updateTextInStore(value) {
+        const id = this.selection.selected.$el.dataset.id
+
+        this.$dispatch(actions.changeText({
+            id: id,
+            value
+        }))
     }
 
     _onFocus() {
