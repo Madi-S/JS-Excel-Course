@@ -31,7 +31,13 @@ export class Table extends ExcelComponent {
         super.init()
 
         this.selectFirstCell()
-        this.subscribe()    
+        this.$on('formula:input', text => {
+            this.selection.selected.text = text
+            this.updateTextInStore(text)
+        })
+        this.$on('formula:enter', () => {
+            this.selection.selected.$el.focus()
+        })   
     }
 
     selectFirstCell() {
@@ -39,17 +45,7 @@ export class Table extends ExcelComponent {
         this.selection.select($firstCell)
         this._onFocus()
     }
-
-    subscribe() {
-        this.$on('formula:input', text => {
-            this.selection.selected.text = text
-            this.updateTextInStore(text)
-        })
-        this.$on('formula:enter', () => {
-            this.selection.selected.$el.focus()
-        })
-    }
-
+    
     toHTML() {
         return createTable(20, 20, this.store.getState())
     }

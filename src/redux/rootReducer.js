@@ -2,7 +2,7 @@ import * as types from '@/redux/types'
 
 // Pure function with no side effect (i.e. storing in localStorage)
 export function rootReducer(state, action) {
-    console.log('Action:', action)
+    // console.log('Action:', action)
     let prevState
     switch(action.type) {
         case types.COL_RESIZE:
