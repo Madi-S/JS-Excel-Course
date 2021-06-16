@@ -53,6 +53,10 @@ export class TableSelection {
         this.selected = null
     }
 
+    applyStyle(style) {
+        this.group.forEach($cell => $cell.css(style))
+    }
+
     static findCell(x, y) {
         return document.querySelector(`.cell[data-id="${x}:${y}"]`)
     }

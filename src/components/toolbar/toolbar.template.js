@@ -13,47 +13,56 @@ function createButton(button) {
             </div>`
 }
 
-export function createToolbar() {
+export function createToolbar(state = {}) {
+    const textAlign = state['textAlign']
+    const isLeftAlign = textAlign === 'left'
+    const isRightAlign = textAlign === 'right'
+    const isCenterAlign = textAlign === 'center'
+
+    const isBold = state['fontWeight'] === 'bold'
+    const isItalic = state['fontStyle'] === 'italic'
+    const isUnderline = state['textDecoration'] === 'underline'
+
     const buttons = [{
             icon: 'format_align_left',
-            active: false,
+            active: isLeftAlign,
             value: {
                 textAlign: 'left'
             }
         },
         {
             icon: 'format_align_center',
-            active: false,
+            active: isCenterAlign,
             value: {
                 textAlign: 'center'
             }
         },
         {
             icon: 'format_align_right',
-            active: false,
+            active: isRightAlign,
             value: {
                 textAlign: 'right'
             }
         },
         {
             icon: 'format_bold',
-            active: false,
+            active: isBold,
             value: {
-                fontWeight: 'bold'
+                fontWeight:  isBold ? 'normal' : 'bold'
             }
         },
         {
             icon: 'format_italic',
-            active: false,
+            active: isItalic,
             value: {
-                fontStyle: 'italic'
+                fontStyle: isItalic ? 'normal' : 'italic'
             }
         },
         {
             icon: 'format_underlined',
-            active: false,
+            active: isUnderline,
             value: {
-                textDecoration: 'underline'
+                textDecoration: isUnderline ? 'none' : 'underline' 
             }
         },
     ]

@@ -1,3 +1,5 @@
+import {DEFAULT_STYLES} from '@/constants'
+
 const CODES = {
     A: 65,
     Z: 90
@@ -8,12 +10,23 @@ let rowState
 let dataState
 
 function createCell(colId, rowId) {
-    const width = colState[colId] 
-    const css = `style="width: ${width};"`
+    let css = []
+    const styles = DEFAULT_STYLES
+    const width = colState[colId]
+    styles['width'] = width
+    
+    Object.keys(styles).forEach(key => {
+        const value = styles[key]
+        if (value) {
+            css.push(`${cssfy(key)}: ${value}`)
+        }
+    })
+    css = css.join(';')
+    
     const content = dataState[`${colId}:${rowId}`] || ''
 
     return `
-    <div ${css} class="cell" data-type="cell" data-id=${colId + ':' + rowId} data-row-id=${rowId} data-col-id=${colId} contenteditable spellcheck="false">${content}</div>
+    <div style="${css}" class="cell" data-type="cell" data-id=${colId + ':' + rowId} data-row-id=${rowId} data-col-id=${colId} contenteditable spellcheck="false">${content}</div>
     `
 }
 
@@ -87,4 +100,15 @@ export function createTable(rowsCount = 100, columnsCount = 20, state = {}) {
     }
 
     return rows.join('')
+}
+
+function capitalize(string) {
+    let first = string[0]
+    first = first.toUpperCase()
+    string = first + string.slice(1, string.length)
+    return string
+}
+
+function cssfy(string) {
+    return capitalize(string).match(/[A-Z][a-z]+/g).join('-').toLowerCase()
 }

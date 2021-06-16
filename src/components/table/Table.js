@@ -1,9 +1,10 @@
 import {$} from '@core/dom'
+import {DEFAULT_STYLES} from '@/constants'
+import * as actions from '@/redux/actions' 
 import {ExcelComponent} from '@core/ExcelComponent'
 import {createTable} from '@/components/table/table.template'
 import {clearSelection, pxToInt} from '@/components/table/utils'
 import {TableSelection} from '@/components/table/TableSelection'
-import * as actions from '@/redux/actions' 
 
 const DEFAULT_ROW_HEIGHT = 24
 const DEFAULT_COL_WIDTH = 120
@@ -37,7 +38,10 @@ export class Table extends ExcelComponent {
         })
         this.$on('formula:enter', () => {
             this.selection.selected.$el.focus()
-        })   
+        })
+        this.$on('toolbar:applyState', style => {
+            this.selection.applyStyle(style)
+        })
     }
 
     selectFirstCell() {
@@ -91,7 +95,7 @@ export class Table extends ExcelComponent {
     }
 
     updateTextInStore(value) {
-        const id = this.selection.selected.$el.dataset.id
+        const id = this.selection.selected.data.id
 
         this.$dispatch(actions.changeText({
             id: id,
@@ -100,8 +104,11 @@ export class Table extends ExcelComponent {
     }
 
     _onFocus() {
-        const text = this.selection.selected.$el.textContent
+        const text = this.selection.selected.text
+        const styles = this.selection.selected.getStyles(Object.keys(DEFAULT_STYLES))
+
         this.$emit('table:focus', text)
+        this.$dispatch(actions.changeStyles(styles))
     }
 
     _isNavigation(event) {
@@ -140,6 +147,7 @@ export class Table extends ExcelComponent {
             if (event.target.dataset.type === 'cell') {
                 const finalCell = $(e.target)
                 this.selection.selectFromTo(initialCell, finalCell)
+                this._onFocus()
             }
         }
         document.onmouseup = () => document.onmousemove = null 

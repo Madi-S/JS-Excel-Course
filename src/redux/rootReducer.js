@@ -2,24 +2,37 @@ import * as types from '@/redux/types'
 
 // Pure function with no side effect (i.e. storing in localStorage)
 export function rootReducer(state, action) {
-    // console.log('Action:', action)
-    let prevState
+    let field
+    let stateName
+
     switch(action.type) {
         case types.COL_RESIZE:
-            const colState = state.colState || {}
-            colState[action.data.id] = action.data.value // column id, px value
-            return {...state, colState}
+            stateName = 'colState'
+            field = getStateField(action, state, stateName)
+            return {...state, field}
+
 
         case types.ROW_RESIZE:
-            const rowState = state.rowState || {}
-            rowState[action.data.id] = action.data.value // row id, px value
-            return {...state, rowState}
+            stateName = 'rowState'
+            field = getStateField(action, state, stateName)
+            return {...state, field}
 
         case types.CHANGE_TEXT:
-            prevState = state['dataState'] || {}
-            prevState[action.data.id] = action.data.value
-            return {...state, currentText: action.data.value, dataState: prevState}
+            stateName = 'dataState'
+            field = getStateField(action, state, stateName)
+            return {...state, currentText: action.data.value, dataState: field}
+
+        case types.CHANGE_STYLES:
+            console.log('changing styles')
+            return {...state, currentStyles: action.data}
 
         default: return state
     }
+}
+
+
+function getStateField(action, state, stateName) {
+    const field = state[stateName] || {}
+    field[action.data.id] = action.data.value
+    return field
 }

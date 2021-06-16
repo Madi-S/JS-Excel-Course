@@ -1,8 +1,9 @@
 import './scss/index.scss'
 
-import {initialState, STATE_KEY} from '@/redux/initialState'
-import {rootReducer} from '@/redux/rootReducer'
+import {STATE_KEY} from '@/constants'
 import {createStore} from '@core/createStore'
+import {rootReducer} from '@/redux/rootReducer'
+import {initialState} from '@/redux/initialState'
 
 import {Table} from '@/components/table/Table'
 import {Excel} from '@/components/excel/Excel'

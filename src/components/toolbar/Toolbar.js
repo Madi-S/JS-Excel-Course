@@ -1,8 +1,10 @@
 import {$} from '@core/dom'
-import {ExcelComponent} from '@core/ExcelComponent'
+import {DEFAULT_STYLES} from '@/constants'
+import {ExcelStateComponent} from '@core/ExcelStateComponent'
 import {createToolbar} from '@/components/toolbar/toolbar.template'
 
-export class Toolbar extends ExcelComponent {
+
+export class Toolbar extends ExcelStateComponent {
     static className = 'excel__toolbar'
     static name = 'Toolbar'
 
@@ -10,25 +12,32 @@ export class Toolbar extends ExcelComponent {
         super($root, {
             name: Toolbar.name,
             listeners: ['click'],
+            subscribe: ['currentStyles'],
             ...options
         })
+    }
+
+    prepare() {
+        this.initState(DEFAULT_STYLES)
+    }
+    
+    get template() {
+        return createToolbar(this.state)
+    }
+    
+    toHTML() {
+        return this.template
+    }
+
+    storeChanged(changes) {
+        this.setState(changes.currentStyles)
     }
 
     onClick(event) {
         const $target = $(event.target)
         if ($target.data.type === 'button') {
             const css = JSON.parse($target.data.value)
-            const $btn = $($target.closest('.button'))
-
-            console.log(css, $target, $btn)
-            console.log($btn.clasess)
-
-            // $btn.addClasses('active')
-            $btn.removeClasses('active')
+            this.$emit('toolbar:applyState', css)
         }
-    }
-
-    toHTML() {
-        return createToolbar()
-    }
+    }    
 }

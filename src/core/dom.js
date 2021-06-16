@@ -7,7 +7,6 @@ class Dom {
 
     set html(html) {
         this.$el.innerHTML = html
-        return this
     }
 
     get html() {
@@ -16,7 +15,6 @@ class Dom {
 
     set text(text) {
         this.$el.textContent = text
-        return this
     }
 
     get text() {
@@ -81,6 +79,14 @@ class Dom {
             this.$el.style[key] = styles[key]
         }) 
         return this
+    }
+
+    getStyles(styles = []) {
+        const res = {}
+        styles.forEach(style => {
+            res[style] = this.$el.style[style]
+        })
+        return res
     }
 
     addClasses(...classes) {
