@@ -7,15 +7,9 @@ const defaultState = {
     dataState: {}, // {'4:10': 'someText'}
     stylesState: {}, // {'1': someStyles}
     currentText: '',
-    currentStyles: DEFAULT_STYLES
+    tableName: 'New Table',
+    currentStyles: DEFAULT_STYLES,
 }
 
-function normalize(state) {
-    return {
-        ...state,
-        currentText: '',
-        currentStyles: DEFAULT_STYLES
-    }
-}
 
-export const initialState = normalize(getFromLocalStorage(STATE_KEY)) || defaultState
+export const initialState = getFromLocalStorage(STATE_KEY) || defaultState

@@ -39,6 +39,10 @@ export function rootReducer(state, action) {
                 currentStyles: {...state.currentStyles, ...action.value}
             }
 
+        case types.CHANGE_TABLE_NAME:
+            stateName = 'tableName'
+            return {...state, [stateName]: action.data.value}
+
         default: return state
     }
 }

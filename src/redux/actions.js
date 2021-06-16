@@ -37,3 +37,10 @@ export function applyStyle(data) {
         data
     }
 }
+
+export function changeTableName(data) {
+    return {
+        type: types.CHANGE_TABLE_NAME,
+        data
+    }
+}

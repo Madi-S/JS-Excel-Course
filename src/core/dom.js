@@ -9,6 +9,10 @@ class Dom {
         this.$el.innerHTML = html
     }
 
+    get value() {
+        return this.$el.value
+    }
+
     get html() {
         return this.$el.outerHTML.trim()
     }
