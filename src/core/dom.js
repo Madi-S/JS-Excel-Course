@@ -23,6 +23,18 @@ class Dom {
         return this.$el.textContent 
     }
 
+    get data() {
+        return this.$el.dataset
+    }
+
+    get clasess() {
+        return this.$el.classList
+    }
+
+    closest(selector) {
+        return this.$el.closest(selector)
+    }
+
     clear() {
         this.html = ''
         return this

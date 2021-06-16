@@ -51,7 +51,6 @@ export class Table extends ExcelComponent {
     }
 
     onInput(event) {
-        // this.$emit('table:input', text)
         this.updateTextInStore(event.target.textContent)
     }
   
