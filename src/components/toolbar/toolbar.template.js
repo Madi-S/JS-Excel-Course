@@ -3,13 +3,13 @@ function createButton(button) {
         data-type="button"
         data-value='${JSON.stringify(button.value)}'`
     return `<div 
-                ${meta}
                 class="button ${button.active ? 'active': ''}"
             >
                 <span
-                ${meta}
-                class="material-icons"
-            >${button.icon}</span>
+                    ${meta}
+                    class="material-icons"
+                >${button.icon}
+                </span>
             </div>`
 }
 

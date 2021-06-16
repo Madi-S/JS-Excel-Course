@@ -37,7 +37,15 @@ export class Toolbar extends ExcelStateComponent {
         const $target = $(event.target)
         if ($target.data.type === 'button') {
             const css = JSON.parse($target.data.value)
+            const btn = $target.closest('.button')
+            this._toggleBtn(btn)
             this.$emit('toolbar:applyState', css)
         }
-    }    
+    }
+
+    _toggleBtn(btn) {
+        if (btn.classList.contains('active')) {
+            btn.classList.remove('active')
+        } else btn.classList.add('active')
+    }
 }
