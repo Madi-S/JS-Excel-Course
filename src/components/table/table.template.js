@@ -1,4 +1,5 @@
 import {DEFAULT_STYLES} from '@/constants'
+import {toInlineStyles} from '@core/utils'
 
 const CODES = {
     A: 65,
@@ -8,25 +9,27 @@ const CODES = {
 let colState
 let rowState
 let dataState
+let stylesState
 
 function createCell(colId, rowId) {
-    let css = []
-    const styles = DEFAULT_STYLES
+    const id = `${colId}:${rowId}`
+    const content = dataState[id] || ''
     const width = colState[colId]
-    styles['width'] = width
+    const css = toInlineStyles({...DEFAULT_STYLES, ...stylesState[id]} || DEFAULT_STYLES)
     
-    Object.keys(styles).forEach(key => {
-        const value = styles[key]
-        if (value) {
-            css.push(`${cssfy(key)}: ${value}`)
-        }
-    })
-    css = css.join(';')
-    
-    const content = dataState[`${colId}:${rowId}`] || ''
+
 
     return `
-    <div style="${css}" class="cell" data-type="cell" data-id=${colId + ':' + rowId} data-row-id=${rowId} data-col-id=${colId} contenteditable spellcheck="false">${content}</div>
+    <div 
+        style="${css}; width: ${width}" 
+        class="cell" 
+        data-type="cell" 
+        data-id=${id} 
+        data-row-id=${rowId} 
+        data-col-id=${colId} 
+        contenteditable spellcheck="false"
+    >${content}
+    </div>
     `
 }
 
@@ -36,9 +39,18 @@ function createCol(code) {
     const css = `style="width: ${width};"`
 
     return `
-    <div ${css} class="column" data-role="selectCol" data-col-id=${colId}>
-        ${String.fromCharCode(code)}
-        <div data-resize="col" data-col-id=${colId} class="col-resize"></div>
+    <div 
+        ${css} 
+        class="column"
+        data-col-id=${colId}
+        data-role="selectCol"
+    >${String.fromCharCode(code)}
+        <div 
+            data-resize="col"
+            data-col-id=${colId} 
+            class="col-resize"
+            >
+        </div>
     </div>
     `
 }
@@ -90,6 +102,7 @@ export function createTable(rowsCount = 100, columnsCount = 20, state = {}) {
     colState = state['colState']
     rowState = state['rowState']
     dataState = state['dataState']
+    stylesState = state['stylesState']
 
     const colsCount = columnsCount || CODES.Z - CODES.A
     const rows = []
@@ -100,15 +113,4 @@ export function createTable(rowsCount = 100, columnsCount = 20, state = {}) {
     }
 
     return rows.join('')
-}
-
-function capitalize(string) {
-    let first = string[0]
-    first = first.toUpperCase()
-    string = first + string.slice(1, string.length)
-    return string
-}
-
-function cssfy(string) {
-    return capitalize(string).match(/[A-Z][a-z]+/g).join('-').toLowerCase()
 }

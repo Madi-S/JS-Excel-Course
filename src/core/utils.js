@@ -22,3 +22,16 @@ export function isEqual(a, b) {
 
     return a === b
 }
+
+export function camelToDashCase(string) {
+    let first = string[0]
+    first = first.toUpperCase()
+    string = first + string.slice(1, string.length)
+    return capitalize(string).match(/[A-Z][a-z]+/g).join('-').toLowerCase()
+}
+
+export function toInlineStyles(styles = {}) {
+    return Object.keys(styles)
+    .map(key => `${camelToDashCase(key)}: ${styles[key]}`)
+    .join(';')
+}

@@ -29,3 +29,11 @@ export function changeStyles(data) {
         data
     }
 }
+
+// data ~ value, ids
+export function applyStyle(data) {
+    return {
+        type: types.APPLY_STYLE,
+        data
+    }
+}

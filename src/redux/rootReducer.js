@@ -1,4 +1,5 @@
 import * as types from '@/redux/types'
+import {toInlineStyles} from '@core/utils'
 
 // Pure function with no side effect (i.e. storing in localStorage)
 export function rootReducer(state, action) {
@@ -20,11 +21,23 @@ export function rootReducer(state, action) {
         case types.CHANGE_TEXT:
             stateName = 'dataState'
             field = getStateField(action, state, stateName)
-            return {...state, currentText: action.data.value, dataState: field}
+            return {...state, currentText: action.data.value, [stateName]: field}
 
         case types.CHANGE_STYLES:
-            console.log('changing styles')
-            return {...state, currentStyles: action.data}
+            stateName = 'currentStyles'
+            return {...state, [stateName]: action.data}
+
+        case types.APPLY_STYLE:
+            stateName = 'stylesState'
+            field = state[stateName] || {}
+            action.data.ids.forEach(id =>{
+                field[id] = {...field[id], ...action.data.value}
+            })
+            return {
+                ...state,
+                [stateName]: field,
+                currentStyles: {...state.currentStyles, ...action.value}
+            }
 
         default: return state
     }

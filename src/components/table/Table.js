@@ -39,8 +39,11 @@ export class Table extends ExcelComponent {
         this.$on('formula:enter', () => {
             this.selection.selected.$el.focus()
         })
-        this.$on('toolbar:applyState', style => {
-            this.selection.applyStyle(style)
+        this.$on('toolbar:applyState', value => {
+            const ids = this.selection.selectedIds
+            this.selection.applyStyle(value)
+            console.log(ids)
+            this.$dispatch(actions.applyStyle({value, ids}))
         })
     }
 
