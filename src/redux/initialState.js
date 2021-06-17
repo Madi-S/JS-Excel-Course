@@ -1,5 +1,5 @@
-import {getFromLocalStorage} from '@core/utils'
-import {DEFAULT_STYLES, STATE_KEY} from '@/constants'
+import {DEFAULT_STYLES} from '@/constants'
+import {clone} from '@core/utils'
 
 const defaultState = {
     rowState: {},
@@ -11,5 +11,6 @@ const defaultState = {
     currentStyles: DEFAULT_STYLES,
 }
 
-
-export const initialState = getFromLocalStorage(STATE_KEY) || defaultState
+export function normalzieInitialState(state) {
+    return state ? state : clone(defaultState) 
+}

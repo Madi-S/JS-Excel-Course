@@ -24,7 +24,12 @@ export class Header extends ExcelComponent {
     onClick(event) {
         const $target = $(event.target)
         if ($target.data.type === 'button') {
-            console.log($target.data.role)
+            const {role} = $target.data
+            if (role === 'delete') {
+                console.log('Deleting')
+            } else if (role === 'exit') {
+                console.log('Redirecting')
+            }
         }
     }
 
