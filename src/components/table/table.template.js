@@ -1,43 +1,89 @@
+import {parse} from '@core/parse'
+import {DEFAULT_STYLES} from '@/constants'
+import {toInlineStyles} from '@core/utils'
+
+
 const CODES = {
     A: 65,
     Z: 90
 }
 
+let colState
+let rowState
+let dataState
+let stylesState
 
-function createCell(colId, rowId, content = '') {
+function createCell(colId, rowId) {
+    const id = `${colId}:${rowId}`
+    const content = dataState[id] || ''
+    const width = colState[colId]
+    const css = toInlineStyles({...DEFAULT_STYLES, ...stylesState[id]} || DEFAULT_STYLES)
+    
+
+
     return `
-    <div class="cell" data-type="cell" data-id=${colId + ':' + rowId} data-row-id=${rowId} data-col-id=${colId} contenteditable spellcheck="false">${content}</div>
+    <div 
+        style="${css}; width: ${width}" 
+        class="cell" 
+        data-type="cell" 
+        data-id=${id} 
+        data-value="${content}"
+        data-row-id=${rowId} 
+        data-col-id=${colId} 
+        contenteditable spellcheck="false"
+    >${parse(content)}
+    </div>
     `
 }
 
 function createCol(code) {
     const colId = code - CODES.A
+    const width = colState[colId] 
+    const css = `style="width: ${width};"`
+
     return `
-    <div class="column" data-role="selectCol" data-col-id=${colId}>
-        ${String.fromCharCode(code)}
-        <div data-resize="col" data-col-id=${colId} class="col-resize"></div>
+    <div 
+        ${css} 
+        class="column"
+        data-col-id=${colId}
+        data-role="selectCol"
+    >${String.fromCharCode(code)}
+        <div 
+            data-resize="col"
+            data-col-id=${colId} 
+            class="col-resize"
+            >
+        </div>
     </div>
     `
 }
 
-function createRow(counter, colsCount) {
+function createRow(rowsCounter, colsCount) {
     const cols = []
-    if (counter === -1) {
-        counter = ''
+    
+    if (rowsCounter === -1) {
         let code = CODES.A
+        rowsCounter = ''
+        
         for (let i = 0; i <= colsCount; i++) {
             cols.push(createCol(code++))
         }
     } else {
+        
         for (let i = 0; i <= colsCount; i++) {
-            cols.push(createCell(i, counter))
+            const content = ''
+            cols.push(createCell(i, rowsCounter, content, ''))
         } 
     }
-    if (typeof counter === 'number') {
+
+    if (typeof rowsCounter === 'number') {
+        const height = rowState[rowsCounter]
+        const css = height ? `style="height: ${height};"` : ''
+
         return `
-        <div class="row">
-            <div class="row-info" data-role="selectRow" data-row-id=${counter}>
-                ${counter + 1}
+        <div ${css} class="row">
+            <div class="row-info" data-role="selectRow" data-row-id=${rowsCounter}>
+                ${rowsCounter + 1}
                 <div data-resize="row" class="row-resize"></div>
             </div>
             <div class="row-data">${cols.join('')}</div>
@@ -55,12 +101,19 @@ function createRow(counter, colsCount) {
     
 }
 
-export function createTable(rowsCount = 100, columnsCount) {
+export function createTable(rowsCount = 100, columnsCount = 20, state = {}) {
+    colState = state['colState']
+    rowState = state['rowState']
+    dataState = state['dataState']
+    stylesState = state['stylesState']
+
     const colsCount = columnsCount || CODES.Z - CODES.A
     const rows = []
-    for (let i = -1; i <= rowsCount; i++) {
-        const row = createRow(i, colsCount)
+
+    for (let rowId = -1; rowId < rowsCount; rowId++) {
+        const row = createRow(rowId, colsCount)
         rows.push(row)
     }
+
     return rows.join('')
 }

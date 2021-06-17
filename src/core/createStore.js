@@ -1,5 +1,8 @@
+import {INIT} from '@/redux/types'
+
+
 export function createStore(rootReducer, initialState = {}) {
-    let state = rootReducer({...initialState}, {type: '__INIT__'})
+    let state = rootReducer({...initialState}, {type: INIT})
     let listeners = []
     
     return {
@@ -16,33 +19,33 @@ export function createStore(rootReducer, initialState = {}) {
             listeners.forEach(listener => listener(state))
         },
         getState() {
-            return state
+            return JSON.parse(JSON.stringify(state))
         }
     }
 }
 
 
-export class Reducer {
+// export class Reducer {
 
-    constructor(rootReducer, initialState = {}) {
-        this.state = rootReducer({...initialState}, {type: '__INIT__'})
-        this.listeners = []
+//     constructor(rootReducer, initialState = {}) {
+//         this.state = rootReducer({...initialState}, {type: INIT})
+//         this.listeners = []
             
-    }
-    subscribe(func) {
-        this.listeners.push(func)
-    }
+//     }
+//     subscribe(func) {
+//         this.listeners.push(func)
+//     }
 
-    dispatch(action) {
-        this.state = rootReducer(this.state, action)
-        this.listeners.forEach(listener => listener(this.state))
-    }
+//     dispatch(action) {
+//         this.state = rootReducer(this.state, action)
+//         this.listeners.forEach(listener => listener(this.state))
+//     }
 
-    getState() {
-        return this.state
-    }
+//     getState() {
+//         return this.state
+//     }
 
-    unsubscribe() {
-        this.listeners = this.listeners.filter(l => l !== func)
-    }
-}
+//     unsubscribe() {
+//         this.listeners = this.listeners.filter(l => l !== func)
+//     }
+// }

@@ -4,7 +4,9 @@ export class ExcelComponent extends DOMListener {
 
     constructor($root, options = {}) {
         super($root, options.listeners)
+        this.subscribe = options.subscribe || []
         this.emitter = options.emitter
+        this.store = options.store
         this.name = options.name
         this.unsubs = []
 
@@ -17,6 +19,17 @@ export class ExcelComponent extends DOMListener {
     // Returns component's HTML template
     toHTML() {
         return ''
+    }
+
+    // Store dispatch
+    $dispatch(action) {
+        this.store.dispatch(action)
+    }
+
+    storeChanged() {}
+
+    isWatching(key) {
+        return this.subscribe.includes(key)
     }
 
     // Notifying subscribers of occurred event

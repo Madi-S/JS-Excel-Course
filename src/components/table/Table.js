@@ -1,9 +1,12 @@
 import {$} from '@core/dom'
+import {parse} from '@core/parse'
+import {debounce} from '@core/utils'
+import {DEFAULT_STYLES} from '@/constants'
+import * as actions from '@/redux/actions' 
 import {ExcelComponent} from '@core/ExcelComponent'
 import {createTable} from '@/components/table/table.template'
-import {clearSelection, pxToInt} from '@/components/table/utils'
 import {TableSelection} from '@/components/table/TableSelection'
-
+import {clearSelection, pxToInt} from '@/components/table/utils'
 
 const DEFAULT_ROW_HEIGHT = 24
 const DEFAULT_COL_WIDTH = 120
@@ -25,13 +28,26 @@ export class Table extends ExcelComponent {
 
     prepare() {
         this.selection = new TableSelection()
+        this.onInput = debounce(this.onInput, 300)
     }
 
     init() {
         super.init()
 
         this.selectFirstCell()
-        this.subscribe()        
+        this.$on('formula:input', value => {
+            this.selection.selected.attr('data-value', value).text = parse(value)
+            this.updateTextInStore(value)
+        })
+        this.$on('formula:enter', () => {
+            this.selection.selected.$el.focus()
+        })
+        this.$on('toolbar:applyState', value => {
+            const ids = this.selection.selectedIds
+            this.selection.applyStyle(value)
+            console.log(ids)
+            this.$dispatch(actions.applyStyle({value, ids}))
+        })
     }
 
     selectFirstCell() {
@@ -39,23 +55,13 @@ export class Table extends ExcelComponent {
         this.selection.select($firstCell)
         this._onFocus()
     }
-
-    subscribe() {
-        this.$on('formula:input', text => {
-            this.selection.selected.text = text
-        })
-        this.$on('formula:enter', () => {
-            this.selection.selected.$el.focus()
-        })
-    }
-
+    
     toHTML() {
-        return createTable()
+        return createTable(20, 20, this.store.getState())
     }
 
     onInput(event) {
-        const text = event.target.textContent
-        this.$emit('table:input', text)
+        this.updateTextInStore(event.target.textContent)
     }
   
     onClick(event) {
@@ -94,9 +100,20 @@ export class Table extends ExcelComponent {
         }
     }
 
+    updateTextInStore(value) {
+        const id = this.selection.selected.data.id
+
+        this.$dispatch(actions.changeText({
+            id: id,
+            value
+        }))
+    }
+
     _onFocus() {
-        const text = this.selection.selected.$el.textContent
-        this.$emit('table:focus', text)
+        const styles = this.selection.selected.getStyles(Object.keys(DEFAULT_STYLES))
+
+        this.$emit('table:focus', this.selection.selected)
+        this.$dispatch(actions.changeStyles(styles))
     }
 
     _isNavigation(event) {
@@ -135,6 +152,7 @@ export class Table extends ExcelComponent {
             if (event.target.dataset.type === 'cell') {
                 const finalCell = $(e.target)
                 this.selection.selectFromTo(initialCell, finalCell)
+                this._onFocus()
             }
         }
         document.onmouseup = () => document.onmousemove = null 
@@ -159,11 +177,11 @@ export class Table extends ExcelComponent {
 
         this.initialCellWidth = finalCellWidth
 
-        let cellWidth = this.$column.style.width
+        let cellWidth = this.resizingColumn.style.width
         cellWidth = cellWidth ? pxToInt(cellWidth) : DEFAULT_COL_WIDTH
         this.cellWidth = cellWidth + widthDiff + 'px'
 
-        this.$column.style.width = this.cellWidth
+        this.resizingColumn.style.width = this.cellWidth
     }
 
     _resizeRow(e) {
@@ -172,11 +190,11 @@ export class Table extends ExcelComponent {
 
         this.initialCellHeight = finalCellHeight
 
-        let cellHeight = this.$row.style.height
+        let cellHeight = this.resizingRow.style.height
         cellHeight = cellHeight ? pxToInt(cellHeight) : DEFAULT_ROW_HEIGHT
-        cellHeight = cellHeight + heightDiff + 'px'
+        this.cellHeight = cellHeight + heightDiff + 'px'
 
-        this.$row.style.height = cellHeight
+        this.resizingRow.style.height = this.cellHeight
     }
 
     _handleResize(resize, event) {
@@ -186,7 +204,7 @@ export class Table extends ExcelComponent {
 
         if (isRowResize) {
             this.initialCellHeight = event.clientY
-            this.$row = event.target.closest('.row')
+            this.resizingRow = event.target.closest('.row')
 
             document.onmousemove = e => {
                 $resizer.style.opacity = 1
@@ -197,7 +215,7 @@ export class Table extends ExcelComponent {
 
         } else if (isColResize) {
             this.initialCellWidth = event.clientX
-            this.$column = event.target.closest('.column')                
+            this.resizingColumn = event.target.closest('.column')                
         }
 
         document.onmousemove = e => {
@@ -214,21 +232,40 @@ export class Table extends ExcelComponent {
         }
 
         document.onmouseup = e => {
-            if (this.cellWidth) {
-                const colId = event.target.dataset.colId
-                const $cells = this.$root.findAll(`.cell[data-col-id='${colId}']`)
-                for (const $cell of $cells) {
-                    $cell.css({'width': this.cellWidth})
-                }
-            }
-            this.cellWidth = null
-
             $resizer.style.opacity = null
             $resizer.style.right = null
             $resizer.style.bottom = null
+
             document.onmousemove = null
             document.onmouseup = null
-        }
+
+            const cellHeight = this.cellHeight
+            const cellWidth = this.cellWidth
+
+            this.cellHeight = null
+            this.cellWidth = null
+
+            if (cellWidth) {
+                const colId = this.resizingColumn.dataset.colId
+                const $cells = this.$root.findAll(`.cell[data-col-id='${colId}']`)
+                for (const $cell of $cells) {
+                    $cell.css({'width': cellWidth})
+                }
+                const data = {
+                    id: colId,
+                    value: cellWidth
+                }
+                this.$dispatch(actions.colResize(data))
+
+            } else if (cellHeight) {
+                const rowId = this.resizingRow.querySelector('.row-info').dataset.rowId
+                const data = {
+                    id: rowId,
+                    value: cellHeight
+                }
+                this.$dispatch(actions.rowResize(data))
+            }
+        }        
     }
 
     _selectRowColCells({role, colId, rowId}) {

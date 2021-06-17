@@ -7,7 +7,10 @@ class Dom {
 
     set html(html) {
         this.$el.innerHTML = html
-        return this
+    }
+
+    get value() {
+        return this.$el.value
     }
 
     get html() {
@@ -16,11 +19,22 @@ class Dom {
 
     set text(text) {
         this.$el.textContent = text
-        return this
     }
 
     get text() {
         return this.$el.textContent 
+    }
+
+    get data() {
+        return this.$el.dataset
+    }
+
+    get clasess() {
+        return this.$el.classList
+    }
+
+    closest(selector) {
+        return this.$el.closest(selector)
     }
 
     clear() {
@@ -64,11 +78,26 @@ class Dom {
         return $els
     }
 
+    attr(name, value) {
+        if (value) {
+            this.$el.setAttribute(name, value)
+            return this
+        } else return this.$el.getAttribute(name)
+    }
+
     css(styles = {}) {
         Object.keys(styles).forEach(key => {
             this.$el.style[key] = styles[key]
         }) 
         return this
+    }
+
+    getStyles(styles = []) {
+        const res = {}
+        styles.forEach(style => {
+            res[style] = this.$el.style[style]
+        })
+        return res
     }
 
     addClasses(...classes) {

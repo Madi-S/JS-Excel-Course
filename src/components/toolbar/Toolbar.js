@@ -1,8 +1,10 @@
-import {
-    ExcelComponent
-} from '@/core/ExcelComponent'
+import {$} from '@core/dom'
+import {DEFAULT_STYLES} from '@/constants'
+import {ExcelStateComponent} from '@core/ExcelStateComponent'
+import {createToolbar} from '@/components/toolbar/toolbar.template'
 
-export class Toolbar extends ExcelComponent {
+
+export class Toolbar extends ExcelStateComponent {
     static className = 'excel__toolbar'
     static name = 'Toolbar'
 
@@ -10,50 +12,40 @@ export class Toolbar extends ExcelComponent {
         super($root, {
             name: Toolbar.name,
             listeners: ['click'],
+            subscribe: ['currentStyles'],
             ...options
         })
     }
 
-    onClick() {
-        console.log('Clicked Toolbar')
+    prepare() {
+        this.initState(DEFAULT_STYLES)
+    }
+    
+    get template() {
+        return createToolbar(this.state)
+    }
+    
+    toHTML() {
+        return this.template
     }
 
-    toHTML() {
-        return `
-        <div class="button">
-            <span class="material-icons">
-                format_align_left
-            </span>
-        </div>
+    storeChanged(changes) {
+        this.setState(changes.currentStyles)
+    }
 
-        <div class="button">
-            <span class="material-icons">
-                format_align_center
-            </span>
-        </div>
+    onClick(event) {
+        const $target = $(event.target)
+        if ($target.data.type === 'button') {
+            const css = JSON.parse($target.data.value)
+            const btn = $target.closest('.button')
+            this._toggleBtn(btn)
+            this.$emit('toolbar:applyState', css)
+        }
+    }
 
-        <div class="button">
-            <span class="material-icons">
-                format_align_right
-            </span>
-        </div>
-
-        <div class="button">
-            <span class="material-icons">
-                format_bold
-            </span>
-        </div>
-
-        <div class="button">
-            <span class="material-icons">
-                format_italic
-            </span>
-        </div>
-
-        <div class="button">
-            <span class="material-icons">
-                format_underlined
-            </span>
-        </div>`
+    _toggleBtn(btn) {
+        if (btn.classList.contains('active')) {
+            btn.classList.remove('active')
+        } else btn.classList.add('active')
     }
 }
