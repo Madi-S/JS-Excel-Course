@@ -1,10 +1,11 @@
 function toHTML(key) {
     const tableKey = key.split(':')[1]
     const {tableName} = JSON.parse(localStorage.getItem(key))
+    const date = new Date(+tableKey)
     return `
     <li class="db__record">
          <a href="#excel/${tableKey}">${tableName}</a>
-         <strong>09.06.2021</strong>
+         <strong>${date.toLocaleDateString() + ' | ' + date.toLocaleTimeString()}</strong>
      </li>`
 }
 
@@ -30,7 +31,7 @@ export function createRecordsTable() {
     return `
             <div class="db__list-header">
                 <span>Table name</span>
-                <span>Last opened</span>
+                <span>Created</span>
             </div>
 
             <ul class="db__list">

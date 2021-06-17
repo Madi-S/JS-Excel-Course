@@ -29,6 +29,9 @@ export class Excel {
     }
 
     init() {
+        if (process.env.NODE_ENV === 'production') {
+            document.addEventListener('contextmenu', preventDefault)
+        }
         this._addEventListeners()
         this.subscriber.subscribeComponents(this.components)
         this.components.forEach(component => component.init())
@@ -42,6 +45,7 @@ export class Excel {
         this.subscriber.unsubscribeFromStore()
         this.components.forEach(component => component.destroy())
         document.removeEventListener('paste', preventFormattedPaste)
+        document.removeEventListener('contextmenu', preventDefault)
     }
 }
 
@@ -50,4 +54,8 @@ function preventFormattedPaste(event) {
     event.preventDefault()
     const text = event.clipboardData.getData('text/plain') || ''
     document.execCommand('insertText', false, text.trim())
+}
+
+function preventDefault(event) {
+    event.preventDefault()
 }
