@@ -24,9 +24,25 @@ export class Router {
     }
     
     changePageHandler() {
-        console.log(ActiveRoute.path)
-        console.log(ActiveRoute.param)
+        this.clearPage()
 
-        this.$placeholder.html = ActiveRoute.path
+        const path = ActiveRoute.path
+        let Page = null
+        if (path === 'excel') {
+            Page = this.routes.excel
+        } else if (path === 'dashboard') {
+            Page = this.routes.dashboard
+        }
+
+        if (Page) {
+            const page = new Page()
+            this.$placeholder.append(page.getRoot())        
+            page.afterRender()
+        }
+
+    }
+
+    clearPage() {
+        this.$placeholder.clear()
     }
 }
