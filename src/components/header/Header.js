@@ -2,6 +2,8 @@ import {$} from '@core/dom'
 import * as actions from '@/redux/actions'
 import {ExcelComponent} from '@/core/ExcelComponent'
 import {createHeader} from '@/components/header/header.template'
+import {debounce} from '@core/utils'
+
 
 export class Header extends ExcelComponent {
     static className = 'excel__header' 
@@ -13,6 +15,10 @@ export class Header extends ExcelComponent {
             listeners: ['click', 'input'],
             ...options
         })
+    }
+
+    prepare() {
+        this.onInput = debounce(this.onInput, 300)
     }
 
     onClick(event) {

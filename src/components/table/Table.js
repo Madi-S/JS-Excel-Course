@@ -1,10 +1,12 @@
 import {$} from '@core/dom'
+import {parse} from '@core/parse'
+import {debounce} from '@core/utils'
 import {DEFAULT_STYLES} from '@/constants'
 import * as actions from '@/redux/actions' 
 import {ExcelComponent} from '@core/ExcelComponent'
 import {createTable} from '@/components/table/table.template'
-import {clearSelection, pxToInt} from '@/components/table/utils'
 import {TableSelection} from '@/components/table/TableSelection'
+import {clearSelection, pxToInt} from '@/components/table/utils'
 
 const DEFAULT_ROW_HEIGHT = 24
 const DEFAULT_COL_WIDTH = 120
@@ -26,15 +28,16 @@ export class Table extends ExcelComponent {
 
     prepare() {
         this.selection = new TableSelection()
+        this.onInput = debounce(this.onInput, 300)
     }
 
     init() {
         super.init()
 
         this.selectFirstCell()
-        this.$on('formula:input', text => {
-            this.selection.selected.text = text
-            this.updateTextInStore(text)
+        this.$on('formula:input', value => {
+            this.selection.selected.attr('data-value', value).text = parse(value)
+            this.updateTextInStore(value)
         })
         this.$on('formula:enter', () => {
             this.selection.selected.$el.focus()
@@ -107,10 +110,9 @@ export class Table extends ExcelComponent {
     }
 
     _onFocus() {
-        const text = this.selection.selected.text
         const styles = this.selection.selected.getStyles(Object.keys(DEFAULT_STYLES))
 
-        this.$emit('table:focus', text)
+        this.$emit('table:focus', this.selection.selected)
         this.$dispatch(actions.changeStyles(styles))
     }
 

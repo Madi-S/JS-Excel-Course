@@ -1,5 +1,7 @@
+import {parse} from '@core/parse'
 import {DEFAULT_STYLES} from '@/constants'
 import {toInlineStyles} from '@core/utils'
+
 
 const CODES = {
     A: 65,
@@ -25,10 +27,11 @@ function createCell(colId, rowId) {
         class="cell" 
         data-type="cell" 
         data-id=${id} 
+        data-value="${content}"
         data-row-id=${rowId} 
         data-col-id=${colId} 
         contenteditable spellcheck="false"
-    >${content}
+    >${parse(content)}
     </div>
     `
 }

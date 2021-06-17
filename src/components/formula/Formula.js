@@ -19,7 +19,10 @@ export class Formula extends ExcelComponent {
         super.init()
 
         this.$formulaInput = $('#formulaInput')
-        this.$on('table:focus', text => this._changeText(text))
+        this.$on('table:focus', $cell => {
+            
+            this._changeText($cell.data.value)
+        })
     }
 
     toHTML() {

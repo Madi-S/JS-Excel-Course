@@ -11,15 +11,17 @@ import {Header} from '@/components/header/Header'
 import {Toolbar} from '@/components/toolbar/Toolbar'
 import {Formula} from '@/components/formula/Formula'
 
-import {saveToLocalStorage} from '@core/utils'
+import {saveToLocalStorage, debounce} from '@core/utils'
 
 
 const store = createStore(rootReducer, initialState)
 
-store.subscribe(state => {
+const stateListener = debounce(state => {
     console.log('[APP] State:', state)
     saveToLocalStorage(STATE_KEY, state)
-})
+}, 300)
+
+store.subscribe(stateListener)
 
 const excel = new Excel('#app', {
     components: [Header, Toolbar, Formula, Table],
