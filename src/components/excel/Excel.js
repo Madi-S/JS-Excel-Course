@@ -3,8 +3,7 @@ import {Emitter} from '@core/Emitter'
 import {StoreSubscriber} from '@/core/StoreSubscriber'
 
 export class Excel {
-    constructor(selector, options) {
-        this.$el = $(selector)
+    constructor(options) {
         this.store = options.store
         this.emitter = new Emitter()
         this.components = options.components || []
@@ -29,30 +28,34 @@ export class Excel {
         return $root
     }
 
-    render() {
-        this.$el.append(this.getRoot())
-
+    init() {
+        if (process.env.NODE_ENV === 'production') {
+            document.addEventListener('contextmenu', preventDefault)
+        }
         this._addEventListeners()
-
         this.subscriber.subscribeComponents(this.components)
         this.components.forEach(component => component.init())
     }
 
     _addEventListeners() {
-        this.$el.on('paste', this._preventFormattedPaste)
-    }
-
-    _preventFormattedPaste(event) {
-        document.addEventListener('paste', event => {
-            event.preventDefault()
-            const text = event.clipboardData.getData('text/plain') || ''
-            document.execCommand('insertText', false, text.trim())
-        })
+        document.addEventListener('paste', preventFormattedPaste)
     }
 
     shutDown() {
         this.subscriber.unsubscribeFromStore()
         this.components.forEach(component => component.destroy())
-        this.$el.off('paste')
+        document.removeEventListener('paste', preventFormattedPaste)
+        document.removeEventListener('contextmenu', preventDefault)
     }
+}
+
+
+function preventFormattedPaste(event) {
+    event.preventDefault()
+    const text = event.clipboardData.getData('text/plain') || ''
+    document.execCommand('insertText', false, text.trim())
+}
+
+function preventDefault(event) {
+    event.preventDefault()
 }

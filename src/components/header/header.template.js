@@ -1,5 +1,4 @@
 export function createHeader(state) {
-    console.log(state, state.tableName)
     const tableName = state['tableName'] || 'New Table'
     return `
     <input 

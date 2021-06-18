@@ -3,6 +3,7 @@ import * as actions from '@/redux/actions'
 import {ExcelComponent} from '@/core/ExcelComponent'
 import {createHeader} from '@/components/header/header.template'
 import {debounce} from '@core/utils'
+import {ActiveRoute} from '@core/routes/ActiveRoute'
 
 
 export class Header extends ExcelComponent {
@@ -24,7 +25,16 @@ export class Header extends ExcelComponent {
     onClick(event) {
         const $target = $(event.target)
         if ($target.data.type === 'button') {
-            console.log($target.data.role)
+            const {role} = $target.data
+            if (role === 'delete') {
+                const decision = confirm('Are you sure you want to delete this table?')
+                if (decision) {
+                    localStorage.removeItem(`excel:${ActiveRoute.param}`)
+                    ActiveRoute.navigate('dashboard')
+                }
+            } else if (role === 'exit') {
+                ActiveRoute.navigate('dashboard')
+            }
         }
     }
 
