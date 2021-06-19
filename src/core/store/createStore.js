@@ -1,8 +1,7 @@
-import {INIT} from '@/redux/types'
-
+import {INIT} from '../../redux/types'
 
 export function createStore(rootReducer, initialState = {}) {
-    let state = rootReducer({...initialState}, {type: INIT})
+    let state = rootReducer({...initialState}, {type:INIT})
     let listeners = []
     
     return {
@@ -28,7 +27,7 @@ export function createStore(rootReducer, initialState = {}) {
 // export class Reducer {
 
 //     constructor(rootReducer, initialState = {}) {
-//         this.state = rootReducer({...initialState}, {type: INIT})
+//         this.state = rootReducer({...initialState}, {type: 'INIT})
 //         this.listeners = []
             
 //     }
