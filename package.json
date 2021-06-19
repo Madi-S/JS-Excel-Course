@@ -4,7 +4,7 @@
   "description": "Pure JS Excel Web App",
   "main": "webpack.config.js",
   "scripts": {
-    "test": "jest --config jest.config.js",
+    "test": "jest --env=jsdom",
     "test:watch": "jest --watch --config jest.config.js",
     "start": "cross-env NODE_ENV=development webpack serve --open",
     "build": "cross-env NODE_ENV=production webpack --mode production",

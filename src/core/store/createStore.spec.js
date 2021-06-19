@@ -12,7 +12,7 @@ const reducer = (state = initialState, action) => {
     return state
 }
 
-describe('Test createStore', () => {
+describe('createStore function', () => {
 
     let store
     let handler
