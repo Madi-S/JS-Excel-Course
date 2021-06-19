@@ -1,6 +1,6 @@
 import {Page} from '@core/Page'
 
-import {createStore} from '@core/createStore'
+import {createStore} from '@core/store/createStore'
 import {rootReducer} from '@/redux/rootReducer'
 import {normalzieInitialState} from '@/redux/initialState'
 import {saveToLocalStorage, getFromLocalStorage, debounce} from '@core/utils'
